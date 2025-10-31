@@ -1,0 +1,345 @@
+Basic Setup
+lua
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/your-repo/Linoria.lua"))()
+
+local Window = Library:CreateWindow({
+    Title = "Your GUI",
+    AutoShow = true,
+    Center = true
+})
+
+local Tab = Window:AddTab("Main")
+local Groupbox = Tab:AddLeftGroupbox("Features")
+
+--UI Elements
+Toggles (Checkboxes)
+lua
+-- Basic toggle
+local MyToggle = Groupbox:AddToggle('ToggleName', {
+    Text = "Enable Feature",      -- Display text
+    Default = false,              -- Default state
+    Tooltip = "Tooltip text",     -- Optional tooltip
+    Risky = false                 -- Shows in red if true
+})
+
+-- Get toggle value
+print(MyToggle.Value) -- true/false
+
+-- On change callback
+MyToggle:OnChanged(function(Value)
+    print("Toggle changed to:", Value)
+end)
+
+-- Set value programmatically
+MyToggle:SetValue(true)
+
+-- Add keypicker to toggle
+MyToggle:AddKeyPicker('ToggleKey', {
+    Text = "Toggle Key",
+    Default = 'F',
+    SyncToggleState = true  -- Keypress toggles the feature
+})
+Buttons
+lua
+-- Basic button
+Groupbox:AddButton('Button Text', function()
+    print("Button clicked!")
+end)
+
+-- Button with tooltip
+Groupbox:AddButton({
+    Text = "Button Text",
+    Func = function()
+        print("Button clicked!")
+    end,
+    Tooltip = "Button tooltip"
+})
+
+-- Add sub-button to existing button
+local MainButton = Groupbox:AddButton('Main Button', function()
+    print("Main button clicked")
+end)
+
+local SubButton = MainButton:AddButton('Sub Button', function()
+    print("Sub button clicked")
+end)
+Sliders
+lua
+-- Basic slider
+local MySlider = Groupbox:AddSlider('SliderName', {
+    Text = "Slider Value",
+    Default = 50,
+    Min = 0,
+    Max = 100,
+    Rounding = 0,           -- Decimal places (0 = integers)
+    Compact = false,        -- Show label above slider
+    Suffix = "units"        -- Text after value
+})
+
+-- Get slider value
+print(MySlider.Value)
+
+-- On change callback
+MySlider:OnChanged(function(Value)
+    print("Slider value:", Value)
+end)
+
+-- Set value programmatically
+MySlider:SetValue(75)
+
+-- Update min/max
+MySlider:SetMin(10)
+MySlider:SetMax(200)
+Dropdowns
+lua
+-- Single selection dropdown
+local MyDropdown = Groupbox:AddDropdown('DropdownName', {
+    Values = {"Option 1", "Option 2", "Option 3"},
+    Default = "Option 1",   -- Default selection
+    Multi = false,          -- Single selection
+    Text = "Select Option",
+    AllowNull = false       -- Can selection be empty?
+})
+
+-- Multi selection dropdown
+local MultiDropdown = Groupbox:AddDropdown('MultiDropdown', {
+    Values = {"A", "B", "C", "D"},
+    Default = {"A", "C"},   -- Default selections
+    Multi = true,           -- Multiple selection
+    Text = "Select Multiple"
+})
+
+-- Get dropdown value(s)
+print(MyDropdown.Value)           -- Single: "Option 1"
+print(MultiDropdown.Value)        -- Multi: {A = true, C = true}
+
+-- On change callback
+MyDropdown:OnChanged(function(Value)
+    print("Dropdown selection:", Value)
+end)
+
+-- Set value programmatically
+MyDropdown:SetValue("Option 2")
+MultiDropdown:SetValue({A = true, B = true})
+
+-- Update dropdown values
+MyDropdown:SetValues({"New1", "New2", "New3"})
+MyDropdown:AddValues("New4")  -- Add single value
+MyDropdown:AddValues({"New5", "New6"})  -- Add multiple
+
+-- Special dropdown types
+Groupbox:AddDropdown('PlayerList', {
+    Values = GetPlayers(),  -- Built-in player list
+    SpecialType = 'Player',
+    ExcludeLocalPlayer = true,
+    ReturnInstanceInstead = false
+})
+
+Groupbox:AddDropdown('TeamList', {
+    Values = GetTeams(),    -- Built-in team list
+    SpecialType = 'Team'
+})
+KeyPickers
+lua
+-- Basic keypicker
+local MyKeybind = Groupbox:AddKeyPicker('KeybindName', {
+    Text = "Feature Keybind",
+    Default = 'F',          -- Default key
+    Mode = 'Toggle',        -- 'Toggle', 'Hold', 'Always'
+    NoUI = false            -- Hide from keybinds list
+})
+
+-- Get keypicker state
+print(MyKeybind.Value)      -- Current key
+print(MyKeybind:GetState()) -- Current state (true/false)
+
+-- On change callback
+MyKeybind:OnChanged(function(Key)
+    print("Key changed to:", Key)
+end)
+
+-- On click callback (for toggle mode)
+MyKeybind:OnClick(function(State)
+    print("Key toggled:", State)
+end)
+
+-- Set value programmatically
+MyKeybind:SetValue({ 'G', 'Toggle' }) -- Key, Mode
+
+-- Common key values:
+-- 'MB1' (Left Mouse), 'MB2' (Right Mouse)
+-- Any KeyCode name: 'F', 'Q', 'E', 'LeftShift', etc.
+ColorPickers
+lua
+-- Add colorpicker to existing element (usually toggle)
+MyToggle:AddColorPicker('ColorPickerName', {
+    Default = Color3.fromRGB(255, 0, 0),  -- Default color
+    Title = 'Select Color',               -- Picker title
+    Transparency = 0,                     -- 0-1 transparency
+})
+
+-- Get color values
+print(MyToggle.ColorPickerName.Value)        -- Color3 value
+print(MyToggle.ColorPickerName.Transparency) -- Transparency
+
+-- On change callback
+MyToggle.ColorPickerName:OnChanged(function(Color, Transparency)
+    print("Color:", Color, "Transparency:", Transparency)
+end)
+
+-- Set value programmatically
+MyToggle.ColorPickerName:SetValueRGB(Color3.fromRGB(0, 255, 0))
+MyToggle.ColorPickerName:SetValue({0.5, 0.8, 1.0}, 0.5) -- HSV, Transparency
+Input Boxes
+lua
+-- Basic input
+local MyInput = Groupbox:AddInput('InputName', {
+    Text = "Input Label",
+    Default = "default text",
+    Numeric = false,        -- Only numbers
+    Finished = true,        -- Only trigger on focus lost
+    Placeholder = "Enter text...",
+    AllowEmpty = true       -- Allow empty input
+})
+
+-- Get input value
+print(MyInput.Value)
+
+-- On change callback
+MyInput:OnChanged(function(Value)
+    print("Input changed:", Value)
+end)
+
+-- Set value programmatically
+MyInput:SetValue("New text")
+Labels
+lua
+-- Basic label
+local MyLabel = Groupbox:AddLabel("Label Text")
+
+-- Update label text
+MyLabel:SetText("New Text")
+
+-- Wrapping label (for longer text)
+Groupbox:AddLabel("Long text that will wrap automatically", true)
+
+-- Label with specific ID (for external access)
+Groupbox:AddLabel("Label Text", false, "LabelID")
+Labels.LabelID:SetText("Updated text")
+Dividers
+lua
+-- Add a divider line
+Groupbox:AddDivider()
+Blank Space
+lua
+-- Add blank space (height in pixels)
+Groupbox:AddBlank(10)  -- 10 pixel space
+Advanced Features
+Dependency Boxes
+lua
+-- Create dependency container
+local Depbox = Groupbox:AddDependencyBox()
+
+-- Add elements that should only show when conditions are met
+Depbox:AddToggle('DependentToggle', {
+    Text = "Only shows when Aimbot is enabled",
+    Default = false
+})
+
+-- Setup dependencies (element must equal value to show)
+Depbox:SetupDependencies({
+    { Toggles.AimbotEnabled, true }
+})
+Tooltips
+lua
+-- Add tooltip to any element
+local ToggleWithTooltip = Groupbox:AddToggle('TooltipToggle', {
+    Text = "Hover me",
+    Tooltip = "This is a tooltip",
+    DisabledTooltip = "This shows when disabled"
+})
+Notifications
+lua
+-- Basic notification
+Library:Notify("Hello World!")
+
+-- Notification with duration
+Library:Notify("Lasts 5 seconds", 5)
+
+-- Advanced notification
+Library:Notify({
+    Title = "Warning",
+    Description = "This is a warning message",
+    Time = 3
+})
+
+-- Update notification side
+Library:SetNotifySide("Right") -- "Left" or "Right"
+Watermark
+lua
+-- Set watermark text
+Library:SetWatermark("My Script v1.0")
+
+-- Show/hide watermark
+Library:SetWatermarkVisibility(true)
+Configuration Management
+SaveManager Setup
+lua
+local SaveManager = loadstring(game:HttpGet("URL_TO_SAVEMANAGER"))()
+SaveManager:SetLibrary(Library)
+SaveManager:SetFolder('YourScriptName')
+SaveManager:BuildConfigSection(SettingsTab)
+
+-- Ignore certain elements from saving
+SaveManager:IgnoreThemeSettings()
+
+-- Auto load config
+SaveManager:LoadAutoloadConfig()
+ThemeManager Setup
+lua
+local ThemeManager = loadstring(game:HttpGet("URL_TO_THEMEMANAGER"))()
+ThemeManager:SetLibrary(Library)
+ThemeManager:ApplyToTab(SettingsTab)
+
+-- Apply specific theme
+ThemeManager:ApplyTheme("Default")
+Utility Functions
+Accessing Elements
+lua
+-- Access toggles
+local ToggleState = Toggles.ToggleName.Value
+
+-- Access options
+local SliderValue = Options.SliderName.Value
+local DropdownValue = Options.DropdownName.Value
+
+-- Access labels
+Labels.LabelName:SetText("New text")
+Common Patterns
+lua
+-- Toggle with keybind and color
+local AimbotToggle = Groupbox:AddToggle('Aimbot', {
+    Text = "Aimbot",
+    Default = false
+})
+
+AimbotToggle:AddKeyPicker('AimbotKey', {
+    Default = 'MB2',
+    SyncToggleState = false
+})
+
+AimbotToggle:AddColorPicker('AimbotColor', {
+    Default = Color3.fromRGB(255, 0, 0)
+})
+
+-- Real-time updates
+Options.AimbotFOV:OnChanged(function(Value)
+    -- Update aimbot FOV in real-time
+end)
+
+-- Conditional logic
+Toggles.FeatureA:OnChanged(function(Value)
+    if Value then
+        Toggles.FeatureB:SetValue(false)
+    end
+end)
